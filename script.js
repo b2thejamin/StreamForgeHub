@@ -130,6 +130,17 @@ uploadForm.addEventListener('submit', async function(e) {
  */
 function getVideoDuration(file) {
     return new Promise((resolve, reject) => {
+        // Validate that file is a File object and has a video MIME type
+        if (!(file instanceof File)) {
+            reject(new Error('Invalid file object'));
+            return;
+        }
+        
+        if (!file.type.startsWith('video/')) {
+            reject(new Error('File is not a video'));
+            return;
+        }
+        
         const video = document.createElement('video');
         video.preload = 'metadata';
         
@@ -139,6 +150,7 @@ function getVideoDuration(file) {
         };
         
         video.onerror = function() {
+            window.URL.revokeObjectURL(video.src);
             reject(new Error('Failed to load video metadata'));
         };
         
